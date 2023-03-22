@@ -12,10 +12,9 @@ var config nfs.Config
 
 func init() {
 
-	err := config.LoadFromEnv()
-	if err != nil {
-		log.Fatal("could not load application config: ", err)
-	}
+	config.LoadDefaults()
+	envConfig := nfs.ConfigFromEnv()
+	config.Merge(&envConfig)
 
 	// make sure the exports file exists
 	if _, err := os.Stat(config.ExportsFile); os.IsNotExist(err) {
