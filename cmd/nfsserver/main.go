@@ -29,6 +29,7 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/config", GetConfig)
+	router.GET("/shares", GetShares)
 	router.POST("/shares", AddShare)
 	router.DELETE("/shares", DeleteShare)
 
