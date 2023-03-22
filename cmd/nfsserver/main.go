@@ -18,11 +18,13 @@ func init() {
 	}
 
 	// make sure the exports file exists
-	f, err := os.Create(config.ExportsFile)
-	if err != nil {
-		log.Fatal("could not open exports file: ", err)
+	if _, err := os.Stat(config.ExportsFile); os.IsNotExist(err) {
+		f, err := os.Create(config.ExportsFile)
+		if err != nil {
+			log.Fatal("could not open exports file: ", err)
+		}
+		f.Close()
 	}
-	f.Close()
 }
 
 func main() {
