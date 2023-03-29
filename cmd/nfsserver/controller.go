@@ -51,11 +51,26 @@ func AddShare(c *gin.Context) {
 	}
 
 	shares, err = nfs.AppendShare(shares, share)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	err = nfs.WriteConfig(&shares, config.ExportsFile)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "could not write configuration"})
 		return
+	}
+
+	if config.ManageNfsServer {
+		err = nfs.RestartNfsServer()
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not restart nfs server"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"msg": "share added"})
@@ -85,9 +100,19 @@ func DeleteShare(c *gin.Context) {
 	}
 
 	err = nfs.WriteConfig(&shares, config.ExportsFile)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "could not write configuration"})
 		return
+	}
+
+	if config.ManageNfsServer {
+		err = nfs.RestartNfsServer()
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not restart nfs server"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{"msg": "record deleted"})

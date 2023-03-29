@@ -12,9 +12,10 @@ var config nfs.Config
 
 func init() {
 
-	config.LoadDefaults()
-	envConfig := nfs.ConfigFromEnv()
-	config.Merge(&envConfig)
+	config = nfs.ConfigFromEnv()
+	defaults := nfs.Config{}
+	defaults.LoadDefaults()
+	config.Merge(&defaults)
 
 	// make sure the exports file exists
 	if _, err := os.Stat(config.ExportsFile); os.IsNotExist(err) {

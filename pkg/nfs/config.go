@@ -1,10 +1,13 @@
 package nfs
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 type Config struct {
 
-	//
+	// file path for exports file
 	ExportsFile string
 
 	// port of the REST API
@@ -21,6 +24,9 @@ type Config struct {
 
 	// the name of the user group for share permissions
 	NfsUserGroup string
+
+	// manage the kernel
+	ManageNfsServer bool
 }
 
 /**
@@ -47,6 +53,7 @@ func (c1 *Config) Merge(c2 *Config) error {
 	if c1.NfsUserGroup == "" {
 		c1.NfsUserGroup = c2.NfsUserGroup
 	}
+	c1.ManageNfsServer = c2.ManageNfsServer
 	return nil
 }
 
@@ -58,6 +65,7 @@ func ConfigFromEnv() Config {
 	c.DefaultSharePath = os.Getenv("NFS_DEFAULT_SHARE_PATH")
 	c.NfsUser = os.Getenv("NFS_USER")
 	c.NfsUserGroup = os.Getenv("NFS_USER_GROUP")
+	c.ManageNfsServer, _ = strconv.ParseBool(os.Getenv("NFS_MANAGE_NFS_SERVER"))
 	return c
 }
 
@@ -68,4 +76,5 @@ func (c *Config) LoadDefaults() {
 	c.DefaultSharePath = "/nfs"
 	c.NfsUser = "nobody"
 	c.NfsUserGroup = "nogroup"
+	c.ManageNfsServer = false
 }
